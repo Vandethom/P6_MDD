@@ -1,7 +1,208 @@
 .center {
-  height: 100vh;
-  display: flex;
+  height         : 100vh;
+  display        : flex;
   justify-content: center;
+  align-items    : center;
+  flex-direction : column;
+}
+
+/* Styles pour la vue authentifiée */
+.home-container {
+  padding  : 5rem 1.5rem 2rem;
+  max-width: 1200px;
+  margin   : 0 auto;
+}
+
+.articles-header {
+  display        : flex;
+  justify-content: space-between;
+  align-items    : center;
+  margin-bottom  : 2rem;
+}
+
+.create-article-btn {
+  display    : flex;
   align-items: center;
+  
+  mat-icon {
+    margin-right: 0.5rem;
+  }
+}
+
+.articles-grid {
+  display              : grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap                  : 2rem;
+}
+
+.article-card {
+  height        : 100%;
+  display       : flex;
   flex-direction: column;
+  transition    : transform 0.2s ease, box-shadow 0.2s ease;
+  cursor        : pointer;
+  transition    : transform 0.2s, box-shadow 0.2s;
+  
+  &:hover {
+    transform : translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .article-header-image {
+    background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+    background-size : cover;
+  }
+    mat-card-content {
+    flex-grow: 1;
+    
+    p {
+      overflow          : hidden;
+      text-overflow     : ellipsis;
+      display           : -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+    }
+    
+    .article-themes {
+      margin-top: 15px;
+      
+      mat-chip {
+        font-size   : 0.8rem;
+        height      : 24px;
+        margin-right: 5px;
+      }
+    }
+  }
+  
+  mat-card-actions {
+    display        : flex;
+    justify-content: flex-end;
+  }
+}
+
+.no-articles {
+  grid-column   : 1 / -1;
+  display       : flex;
+  flex-direction: column;
+  align-items   : center;
+  text-align    : center;
+  padding       : 3rem 0;
+  color         : #757575;
+  
+  .empty-icon {
+    font-size    : 4rem;
+    height       : 4rem;
+    width        : 4rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.filter-container {
+  min-width: 150px;
+}
+
+/* Styles pour la page d'accueil non-authentifiée */
+.welcome-header {
+  background-color: #fff;
+  box-shadow      : 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding         : 0.5rem 0.5rem 0.5rem 0.2rem;
+  position        : fixed;
+  top             : 0;
+  left            : 0;
+  right           : 0;
+  z-index         : 1000;
+    .header-container {
+    display        : flex;
+    align-items    : center;
+    justify-content: flex-start;
+    max-width      : 1200px;
+    margin         : 0 auto;
+    padding-left   : 0;
+    
+    .logo-container {
+      margin-right: 1rem;
+      padding-left: 0;
+      display     : flex;
+      align-items : center;
+      
+      .header-logo {
+        height        : 50px;
+        width         : auto;
+        object-fit    : contain;
+        margin-left   : 0;
+        vertical-align: middle;
+      }
+    }
+    
+    .header-title {
+      h1 {
+        margin     : 0;
+        font-size  : 1.5rem;
+        color      : #333;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+.welcome-container {
+  height          : 100vh;
+  display         : flex;
+  flex-direction  : column;
+  justify-content : center;
+  align-items     : center;
+  background-color: #f5f5f5;
+  padding         : 2rem;
+}
+
+.welcome-logo-container {
+  margin-bottom: 2rem;
+  text-align   : center;
+  width        : 100%;
+}
+
+.welcome-logo {
+  width      : 80%; /* Logo 8x plus grand */
+  max-width  : 500px;
+  height     : auto;
+  object-fit : contain;
+  display    : block;
+  margin     : 0 auto;
+}
+
+.welcome-buttons {
+  display        : flex;
+  flex-direction : row;
+  gap            : 2rem;
+  margin-top     : 1.5rem;
+  justify-content: center;
+  width          : 100%;
+}
+
+.welcome-button {
+  min-width       : 180px;
+  padding         : 0.8rem 2rem;
+  font-size       : 1.2rem;
+  transition      : all 0.3s ease;
+  background-color: white !important;
+  color           : black !important;
+  border-radius   : 8px;
+  border          : 1px solid #e0e0e0;
+  
+  &:hover {
+    transform : translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@media (max-width: 768px) {
+  .articles-header {
+    flex-direction: column;
+    gap           : 1rem;
+    align-items   : flex-start;
+  }
+  
+  .articles-grid {
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,0 +1,122 @@
+<header class="profile-header">
+  <app-header></app-header>
+</header>
+
+<div class="profile-container">
+  <div class="profile-content">
+    <h2>Profil utilisateur</h2>
+    
+    <form [formGroup]="userForm" (ngSubmit)="onSubmitUserForm()">
+      <div class="form-group">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nom d'utilisateur</mat-label>
+          <input matInput formControlName="username" placeholder="Nom d'utilisateur">
+          <mat-error *ngIf="userForm.get('username')?.invalid && userForm.get('username')?.touched">
+            Le nom d'utilisateur est requis
+          </mat-error>
+        </mat-form-field>
+      </div>
+      
+      <div class="form-group">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="Email">
+          <mat-error *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+            Veuillez entrer une adresse email valide
+          </mat-error>
+        </mat-form-field>
+      </div>
+      
+      <div class="form-group">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Mot de passe</mat-label>
+          <input matInput type="password" formControlName="password" placeholder="Mot de passe">
+          <mat-hint>Laissez vide pour ne pas modifier</mat-hint>
+          <mat-error *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+            Le mot de passe doit contenir au moins 6 caractères
+          </mat-error>
+        </mat-form-field>
+      </div>
+      
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="userForm.invalid || loading">
+          Sauvegarder
+          <mat-spinner *ngIf="loading" [diameter]="20"></mat-spinner>
+        </button>
+      </div>
+    </form>
+    
+    <div class="profile-section">
+      <h2>Mes abonnements aux thèmes</h2>
+      
+      <div class="themes-action">
+        <button mat-raised-button color="primary" (click)="navigateToThemes()">
+          <mat-icon>topic</mat-icon> Gérer mes abonnements
+        </button>
+      </div>
+      
+      <div *ngIf="subscriptions.length > 0; else noSubscriptions" class="subscriptions-container">
+        <div *ngFor="let subscription of subscriptions" class="theme-subscription">
+          <mat-card class="theme-header">
+            <mat-card-header>
+              <mat-card-title>{{ subscription.theme.title }}</mat-card-title>
+            </mat-card-header>
+            
+            <mat-card-content>
+              <p>{{ subscription.theme.description }}</p>
+            </mat-card-content>
+            
+            <mat-card-actions>
+              <button mat-button color="warn" (click)="unsubscribe(subscription.theme.id)">
+                <mat-icon>cancel</mat-icon> Se désabonner
+              </button>
+            </mat-card-actions>
+          </mat-card>
+          
+          <div class="theme-articles">
+            <h3>Articles de ce thème</h3>
+            
+            <div *ngIf="getArticlesByTheme(subscription.theme.id).length > 0; else noArticlesInTheme" class="articles-list">
+              <mat-card *ngFor="let article of getArticlesByTheme(subscription.theme.id)" class="article-card" (click)="navigateToArticle(article.id!)">
+                <mat-card-header>
+                  <mat-card-title>{{ article.title }}</mat-card-title>
+                  <mat-card-subtitle>
+                    {{ article.createdAt | date:'medium' }} · Par {{ article.author }}
+                  </mat-card-subtitle>
+                </mat-card-header>
+                
+                <img *ngIf="article.imageUrl" mat-card-image [src]="article.imageUrl" [alt]="article.title">
+                
+                <mat-card-content>
+                  <p>{{ article.content | slice:0:150 }}{{ article.content.length > 150 ? '...' : '' }}</p>
+                </mat-card-content>
+                
+                <mat-card-actions>
+                  <button mat-button color="primary">
+                    <mat-icon>visibility</mat-icon> Lire l'article
+                  </button>
+                </mat-card-actions>
+              </mat-card>
+            </div>
+            
+            <ng-template #noArticlesInTheme>
+              <div class="no-articles">
+                <p>Aucun article disponible pour ce thème pour le moment.</p>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+      
+      <ng-template #noSubscriptions>
+        <div class="no-subscriptions">
+          <mat-icon class="empty-icon">topic</mat-icon>
+          <p>Vous n'êtes abonné à aucun thème pour le moment.</p>
+          <button mat-raised-button color="primary" (click)="navigateToThemes()">
+            <mat-icon>add</mat-icon> S'abonner à des thèmes
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

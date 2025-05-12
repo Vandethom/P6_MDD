@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Injectable }  from '@angular/core';
+import { HttpClient }  from '@angular/common/http';
+import { Observable }  from 'rxjs';
+import { tap }         from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 interface AuthResponse {
@@ -27,6 +27,12 @@ interface DecodedToken {
   issuedAtTime  : number;
 }
 
+export interface User {
+  id      : number;
+  username: string;
+  email?  : string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -37,7 +43,8 @@ export class AuthService {
 
   login(
     username: string, 
-    password: string): Observable<AuthResponse> {
+    password: string
+  ): Observable<AuthResponse> {
       const loginRequest: LoginRequest = { username, password };
       return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, loginRequest)
         .pipe(
@@ -74,7 +81,15 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     const token = this.getToken();
-    return token != null && !this.isTokenExpired(token);
+    console.log('Token exists:', !!token);
+    
+    if (token) {
+      const isExpired = this.isTokenExpired(token);
+      console.log('Token expired:', isExpired);
+      return !isExpired;
+    }
+    
+    return false;
   }
 
   isTokenExpired(token: string): boolean {
@@ -93,17 +108,23 @@ export class AuthService {
 
   private decodeToken(token: string): DecodedToken | null {
     try {
-      // Simple decoding of JWT payload
+      // Browser-compatible JWT decoding
       const base64Url   = token.split('.')[1];
       const base64      = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = Buffer.from(base64, 'base64').toString('utf-8');
-      const rawToken    = JSON.parse(jsonPayload);
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const rawToken = JSON.parse(jsonPayload);
       return {
         subject       : rawToken.sub,
         expirationTime: rawToken.exp,
         issuedAtTime  : rawToken.iat
       };
     } catch (error) {
+      console.error('Error decoding token:', error);
       return null;
     }
   }
@@ -118,5 +139,35 @@ export class AuthService {
 
   getUserId(): string | null {
     return localStorage.getItem('userId');
+  }
+  getCurrentUser(): User | null {
+    const userId   = this.getUserId();
+    const username = this.getUsername();
+    
+    if (userId && username) {
+      return {
+        id      : parseInt(userId),
+        username: username
+      };
+    }
+    
+    return null;
+  }
+  
+    // Récupérer le profil complet d'un utilisateur par ID
+  getUserProfile(userId: number): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/users/${userId}`);
+  }
+  
+  // Mettre à jour le profil utilisateur
+  updateUserProfile(userId: number, userData: { username?: string; email?: string; password?: string }): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/users/${userId}`, userData)
+      .pipe(
+        tap(response => {
+          if (response.username) {
+            localStorage.setItem('username', response.username);
+          }
+        })
+      );
   }
 }

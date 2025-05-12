@@ -1,0 +1,40 @@
+<div class="theme-subscription-container">
+  <h2>S'abonner aux thèmes</h2>
+  
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+  
+  <div *ngIf="successMessage" class="alert alert-success">
+    {{ successMessage }}
+  </div>
+
+  <div *ngIf="isLoading" class="text-center">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && availableThemes.length === 0" class="alert alert-info">
+    Aucun thème disponible pour le moment.
+  </div>
+
+  <div *ngIf="!isLoading && availableThemes.length > 0" class="themes-grid">
+    <div class="theme-card" *ngFor="let theme of availableThemes">
+      <div class="theme-card-header">
+        <h3>{{ theme.title }}</h3>
+      </div>
+      <div class="theme-card-body">
+        <p>{{ theme.description }}</p>
+      </div>
+      <div class="theme-card-footer">
+        <button 
+          [ngClass]="isSubscribed(theme.id) ? 'btn-danger' : 'btn-primary'" 
+          class="btn" 
+          (click)="toggleSubscription(theme.id)">
+          {{ isSubscribed(theme.id) ? 'Se désabonner' : 'S\'abonner' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

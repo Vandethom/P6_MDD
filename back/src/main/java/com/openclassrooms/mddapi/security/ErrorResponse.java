@@ -1,9 +1,9 @@
 package com.openclassrooms.mddapi.security;
 
 public class ErrorResponse {
-    private int status;
+    private int    status;
     private String message;
-    private long timestamp;
+    private long   timestamp;
     
     public ErrorResponse(
         int    status, 

@@ -1,0 +1,120 @@
+<app-header></app-header>
+
+<div class="article-detail-container">
+  <div *ngIf="loading" class="loading-spinner">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!loading && article" class="article-content">
+    <!-- Navigation back button -->
+    <button mat-icon-button class="back-button" (click)="navigateBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+
+    <!-- Article header -->
+    <h1 class="article-title">{{ article.title }}</h1>
+    
+    <div class="article-meta">
+      <span class="article-date">{{ article.createdAt | date:'medium' }}</span>
+      <span class="article-author">· Par {{ article.author }}</span>
+    </div>
+
+    <!-- Article image if available -->
+    <div *ngIf="article.imageUrl" class="article-image-container">
+      <img [src]="article.imageUrl" [alt]="article.title" class="article-image">
+    </div>
+
+    <!-- Article content -->
+    <div class="article-text">
+      <p>{{ article.content }}</p>
+    </div>
+
+    <!-- Article themes -->
+    <div *ngIf="article.themes && article.themes.length > 0" class="article-themes">
+      <mat-chip-list>
+        <mat-chip *ngFor="let theme of article.themes" color="primary" selected>
+          {{ theme.title }}
+        </mat-chip>
+      </mat-chip-list>
+    </div>
+
+    <!-- Separator line -->
+    <hr class="separator" />
+
+    <!-- Comments section -->
+    <div class="comments-section">
+      <h2>Commentaires ({{ comments.length }})</h2>
+
+      <!-- Comment form -->
+      <div *ngIf="!isUserLoggedIn()" class="login-required">
+        <p>
+          <mat-icon color="primary">info</mat-icon>
+          Vous devez être <a routerLink="/auth" class="login-link">connecté</a> pour commenter
+        </p>
+      </div>
+      
+      <form *ngIf="isUserLoggedIn()" [formGroup]="commentForm" (ngSubmit)="onSubmitComment()" class="comment-form">
+        <div class="comment-header">
+          <span class="comment-as">Commenter en tant que <strong>{{ getCurrentUsername() }}</strong></span>
+        </div>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Ajouter un commentaire</mat-label>
+          <textarea 
+            matInput 
+            formControlName="content" 
+            rows="3"
+            placeholder="Partagez votre opinion..."></textarea>
+          <mat-error *ngIf="commentForm.get('content')?.hasError('required')">
+            Le contenu du commentaire ne peut pas être vide
+          </mat-error>
+        </mat-form-field>
+        <div class="form-actions">
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit" 
+            [disabled]="commentForm.invalid || submitting">
+            <mat-icon>send</mat-icon> Publier
+          </button>
+        </div>
+      </form>
+
+      <!-- Comments list -->
+      <div class="comments-list">
+        <ng-container *ngIf="comments.length > 0; else noComments">
+          <mat-card *ngFor="let comment of comments" class="comment-card">
+            <mat-card-header>
+              <mat-card-title class="comment-username">{{ comment.username }}</mat-card-title>
+              <mat-card-subtitle *ngIf="comment.createdAt" class="comment-date">
+                {{ comment.createdAt | date:'medium' }}
+              </mat-card-subtitle>
+            </mat-card-header>
+            
+            <mat-card-content class="comment-content">
+              <p>{{ comment.content }}</p>
+            </mat-card-content>
+            
+            <mat-card-actions *ngIf="canDeleteComment(comment)" align="end">
+              <button mat-icon-button color="warn" (click)="deleteComment(comment.id!)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </ng-container>
+        
+        <ng-template #noComments>
+          <div class="no-comments">
+            <p>Aucun commentaire pour le moment. Soyez le premier à commenter !</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !article" class="error-message">
+    <p>Article non trouvé ou inaccessible.</p>
+    <button mat-raised-button color="primary" (click)="navigateBack()">
+      Retourner à l'accueil
+    </button>
+  </div>
+</div>

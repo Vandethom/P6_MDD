@@ -1,5 +1,92 @@
-<div class="center">
-  <img src="/assets/logo_p6.png" alt="logo" />
-  <h1>Welcome to MDD</h1>
-  <button mat-raised-button color="primary" (click)="start()">Commencer</button>
+<!-- Authenticated view with articles -->
+<div *ngIf="isAuthenticated">
+  <app-header></app-header>
+
+  <main class="home-container">
+    <div class="articles-header">
+      <button mat-raised-button color="primary" class="create-article-btn" (click)="createArticle()">
+        <mat-icon>add</mat-icon> Créer un article
+      </button>
+      
+      <div class="filter-container">
+        <mat-form-field appearance="outline">
+          <mat-label>Trier par</mat-label>
+          <mat-select [(value)]="sortOption" (selectionChange)="sortArticles()">
+            <mat-option value="recent">Plus récents</mat-option>
+            <mat-option value="oldest">Plus anciens</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div class="articles-grid">      <ng-container *ngIf="articles.length > 0; else noArticles">
+        <mat-card *ngFor="let article of articles" class="article-card" (click)="viewArticleDetail(article.id!)">
+          <mat-card-header>
+            <mat-card-title>{{ article.title }}</mat-card-title>
+            <mat-card-subtitle>
+              {{ article.createdAt | date:'medium' }} · Par {{ article.author }}
+            </mat-card-subtitle>
+          </mat-card-header>
+          
+          <img *ngIf="article.imageUrl" 
+               mat-card-image 
+               [src]="article.imageUrl" 
+               [alt]="article.title">
+            <mat-card-content>
+            <p>{{ article.content | slice:0:200 }}{{ article.content.length > 200 ? '...' : '' }}</p>
+            
+            <div *ngIf="article.themes && article.themes.length > 0" class="article-themes">
+              <mat-chip-list>
+                <mat-chip *ngFor="let theme of article.themes" color="primary" selected>
+                  {{ theme.title }}
+                </mat-chip>
+              </mat-chip-list>
+            </div>
+          </mat-card-content>
+            <mat-card-actions *ngIf="isCurrentUserArticle(article)" (click)="$event.stopPropagation()">
+            <button mat-button color="primary" (click)="editArticle(article.id!)">
+              <mat-icon>edit</mat-icon> Modifier
+            </button>
+            <button mat-button color="warn" (click)="deleteArticle(article.id!)">
+              <mat-icon>delete</mat-icon> Supprimer
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </ng-container>
+      
+      <ng-template #noArticles>
+        <div class="no-articles">
+          <mat-icon class="empty-icon">article</mat-icon>
+          <p>Aucun article disponible pour le moment.</p>
+          <button mat-raised-button color="primary" (click)="createArticle()">
+            Créer votre premier article
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </main>
+</div>
+
+<!-- Welcome page for non-authenticated users -->
+<div *ngIf="!isAuthenticated">
+  <header class="welcome-header">
+    <div class="header-container">
+      <div class="logo-container">
+        <img src="/assets/logo_p6.png" alt="Logo du site" class="header-logo">
+      </div>
+      <div class="header-title">
+        <h1>Mega Desk Dev</h1>
+      </div>
+    </div>
+  </header>
+
+  <div class="welcome-container">
+    <div class="welcome-logo-container">
+      <img src="/assets/logo_p6.png" alt="Logo" class="welcome-logo">
+    </div>
+    <div class="welcome-buttons">
+      <button mat-raised-button color="primary" class="welcome-button" (click)="navigateToLogin()">Se connecter</button>
+      <button mat-raised-button color="accent" class="welcome-button" (click)="navigateToRegister()">S'inscrire</button>
+    </div>
+  </div>
 </div>

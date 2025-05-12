@@ -1,12 +1,12 @@
 import { Component, OnInit }                  from '@angular/core';
-import { Router }                             from '@angular/router';
+import { Router, ActivatedRoute }             from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthService }                        from '../../services/auth.service';
 import { MatDialog }                          from '@angular/material/dialog';
 import { MatSnackBar }                        from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-auth',
+  selector   : 'app-auth',
   templateUrl: './auth.component.html',
   styleUrls  : ['./auth.component.scss']
 })
@@ -17,16 +17,20 @@ export class AuthComponent implements OnInit {
     password: ['', [Validators.required, Validators.minLength(6)]]
   });
   loading = false;
-
   constructor(
     private authService: AuthService,
     private router     : Router,
+    private route      : ActivatedRoute,
     private fb         : FormBuilder,
     private snackBar   : MatSnackBar
   ) { }
 
   ngOnInit(): void {
-    this.initForm();
+    // Determine if we're in login or register mode based on the route data
+    this.route.data.subscribe(data => {
+      this.isLoginMode = data['isLogin'] !== false;
+      this.initForm();
+    });
   }
 
   initForm(): void {
@@ -43,10 +47,12 @@ export class AuthComponent implements OnInit {
       });
     }
   }
-
   toggleAuthMode(): void {
-    this.isLoginMode = !this.isLoginMode;
-    this.initForm();
+    if (this.isLoginMode) {
+      this.router.navigate(['/register']);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 
   onSubmit(): void {

@@ -1,0 +1,53 @@
+<div class="themes-page">
+  <app-header></app-header>
+  
+  <div class="themes-container">
+    <div class="themes-header">
+      <h2>Thèmes disponibles</h2>
+      <p class="theme-description">
+        Abonnez-vous aux thèmes qui vous intéressent pour voir les articles associés dans votre profil
+      </p>
+      <button mat-raised-button color="primary" (click)="viewUserProfile()">
+        <mat-icon>person</mat-icon> Voir mon profil et mes abonnements
+      </button>
+    </div>
+    
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+    
+    <div *ngIf="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+    
+    <div *ngIf="loading" class="loading-spinner">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    
+    <div *ngIf="!loading && themes.length === 0" class="no-themes">
+      <mat-icon>topic</mat-icon>
+      <p>Aucun thème disponible pour le moment.</p>
+    </div>
+    
+    <div *ngIf="!loading && themes.length > 0" class="themes-grid">
+      <mat-card *ngFor="let theme of themes" class="theme-card">
+        <mat-card-header>
+          <mat-card-title>{{ theme.title }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ theme.description }}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button 
+            mat-raised-button 
+            [color]="isSubscribed(theme.id) ? 'warn' : 'primary'" 
+            (click)="toggleSubscription(theme.id)"
+            [disabled]="loading">
+            <mat-icon>{{ isSubscribed(theme.id) ? 'cancel' : 'add' }}</mat-icon>
+            {{ isSubscribed(theme.id) ? 'Se désabonner' : 'S\'abonner' }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

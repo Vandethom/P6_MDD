@@ -1,0 +1,81 @@
+<app-header></app-header>
+
+<div class="article-form-container">
+  <div class="form-header">
+    <h2>{{ isEditMode ? 'Modifier' : 'Créer' }} un article</h2>
+    <button mat-icon-button color="primary" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+  </div>
+
+  <mat-card>
+    <mat-card-content>
+      <form [formGroup]="articleForm" (ngSubmit)="onSubmit()">
+        <div class="form-field">
+          <mat-form-field appearance="outline">
+            <mat-label>Titre</mat-label>
+            <input matInput formControlName="title" placeholder="Titre de l'article" required>
+            <mat-error *ngIf="articleForm.get('title')?.hasError('required')">
+              Le titre est requis
+            </mat-error>
+            <mat-error *ngIf="articleForm.get('title')?.hasError('minlength')">
+              Le titre doit comporter au moins 3 caractères
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-field">
+          <mat-form-field appearance="outline">
+            <mat-label>Contenu</mat-label>
+            <textarea matInput formControlName="content" rows="10" placeholder="Contenu de l'article" required></textarea>
+            <mat-error *ngIf="articleForm.get('content')?.hasError('required')">
+              Le contenu est requis
+            </mat-error>
+            <mat-error *ngIf="articleForm.get('content')?.hasError('minlength')">
+              Le contenu doit comporter au moins 10 caractères
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-field">
+          <mat-form-field appearance="outline">
+            <mat-label>URL de l'image (optionnel)</mat-label>
+            <input matInput formControlName="imageUrl" placeholder="https://example.com/image.jpg">
+            <mat-hint>Laissez vide si vous ne souhaitez pas ajouter d'image</mat-hint>
+            <mat-error *ngIf="articleForm.get('imageUrl')?.hasError('pattern')">
+              Veuillez saisir une URL valide
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-field">
+          <mat-form-field appearance="outline">
+            <mat-label>Thèmes (optionnel)</mat-label>
+            <mat-select formControlName="themeIds" multiple>
+              <mat-option *ngFor="let theme of availableThemes" [value]="theme.id">
+                {{ theme.title }}
+              </mat-option>
+            </mat-select>
+            <mat-hint>Sélectionnez les thèmes associés à votre article</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="form-actions">
+          <button mat-button type="button" (click)="goBack()">Annuler</button>
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit" 
+            [disabled]="articleForm.invalid || isSubmitting">
+            {{ isEditMode ? 'Mettre à jour' : 'Publier' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="loading-spinner" *ngIf="isSubmitting">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>{{ isEditMode ? 'Mise à jour en cours...' : 'Publication en cours...' }}</p>
+  </div>
+</div>

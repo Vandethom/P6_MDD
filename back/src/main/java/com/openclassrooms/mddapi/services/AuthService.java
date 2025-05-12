@@ -7,20 +7,22 @@ import com.openclassrooms.mddapi.models.User;
 import com.openclassrooms.mddapi.security.AuthException;
 import com.openclassrooms.mddapi.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService implements IAuthService {
 
-    private final IUserService userService;
+    private final IUserService    userService;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final JwtUtil         jwtUtil;
 
     @Autowired
-    public AuthService(IUserService userService,
+    public AuthService(IUserService   userService,
                       PasswordEncoder passwordEncoder,
-                      JwtUtil jwtUtil) {
+                      JwtUtil         jwtUtil
+                      ) {
         this.userService     = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil         = jwtUtil;
@@ -51,20 +53,15 @@ public class AuthService implements IAuthService {
         
         if (!userService.isEmailAvailable(registerRequest.getEmail())) {
             throw new AuthException("Email déjà utilisé");
-        }
-
-        // Create new user
-        User user = new User(
-                registerRequest.getUsername(), 
-                passwordEncoder.encode(registerRequest.getPassword()),
-                registerRequest.getEmail()
-        );
+        }        // Create new user
+        User user = User.builder()
+                .username(registerRequest.getUsername())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .email(registerRequest.getEmail())
+                .build();
         
-        // Save user
         User savedUser = userService.createUser(user);
-        
-        // Generate token
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token   = jwtUtil.generateToken(user.getUsername());
         
         return new AuthResponse(token, savedUser.getUsername(), savedUser.getId());
     }
@@ -76,4 +73,15 @@ public class AuthService implements IAuthService {
         ) {
             return jwtUtil.validateToken(token, username);
         }
+
+    /**
+     * Extrait l'ID de l'utilisateur à partir de l'objet Authentication
+     * @param authentication l'objet Authentication courant
+     * @return l'ID de l'utilisateur authentifié
+     */
+    public Long getUserIdFromAuthentication(Authentication authentication) {
+        String username = authentication.getName();
+        User user = userService.findByUsername(username);
+        return user.getId();
+    }
 }
