@@ -5,20 +5,30 @@ import com.openclassrooms.mddapi.models.User;
 import com.openclassrooms.mddapi.repositories.UserRepository;
 import com.openclassrooms.mddapi.security.AuthException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService implements IUserService {
 
-    private final UserRepository userRepository;
+    private final UserRepository  userRepository;
     private final PasswordEncoder passwordEncoder;
+    
+    // Read sensitive settings from environment variables with defaults
+    @Value("${app.security.min-password-length:8}")
+    private int minPasswordLength;
+    
+    @Value("${app.security.password-check-enabled:true}")
+    private boolean passwordCheckEnabled;
 
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+        this.userRepository  = userRepository;
         this.passwordEncoder = passwordEncoder;
-    }    @Override
+    }    
+    
+    @Override
     public User findByUsername(String username) {
         System.out.println("Looking up user by username: " + username);
         return userRepository.findByUsername(username)
@@ -76,7 +86,12 @@ public class UserService implements IUserService {
             existingUser.setEmail(updateRequest.getEmail());
         }
         
+        // Check password using environment variable configuration
         if (updateRequest.getPassword() != null && !updateRequest.getPassword().isEmpty()) {
+            // Validate password if checks are enabled via environment variable
+            if (passwordCheckEnabled && updateRequest.getPassword().length() < minPasswordLength) {
+                throw new AuthException("Le mot de passe doit contenir au moins " + minPasswordLength + " caractères");
+            }
             existingUser.setPassword(passwordEncoder.encode(updateRequest.getPassword()));
         }
         

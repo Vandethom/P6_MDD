@@ -30,6 +30,7 @@ import { ArticleFormComponent } from './components/article-form/article-form.com
 import { UserProfileComponent } from './pages/user-profile/user-profile.component';
 import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 import { ThemesComponent } from './pages/themes/themes.component';
+import { ThemeDetailComponent } from './pages/theme-detail/theme-detail.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { ThemesComponent } from './pages/themes/themes.component';
     ArticleFormComponent,
     UserProfileComponent,
     ArticleDetailComponent,
-    ThemesComponent
+    ThemesComponent,
+    ThemeDetailComponent
   ],
   imports: [
     BrowserModule,

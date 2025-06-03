@@ -30,8 +30,6 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())            .authorizeHttpRequests(auth -> auth
                 .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
-                .requestMatchers(new AntPathRequestMatcher("/api/themes/**", "GET")).permitAll() // Allow read-only access to themes
-                .requestMatchers(new AntPathRequestMatcher("/api/articles/**", "GET")).permitAll() // Allow read-only access to articles
                 .anyRequest().authenticated() 
             )
             .sessionManagement(session -> session

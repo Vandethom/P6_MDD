@@ -5,6 +5,12 @@ import { environment }             from '../../environments/environment';
 import { AuthService }             from './auth.service';
 import { Article }                 from '../models/article.model';
 
+
+enum SortBy {
+  ASC = 'asc',
+  DESC = 'desc'
+}
+
 export interface CreateArticleRequest {
   title    : string;
   content  : string;
@@ -23,8 +29,9 @@ export class ArticleService {
     private authService: AuthService
   ) { }
 
-  getArticles(): Observable<Article[]> {
-    return this.http.get<Article[]>(this.apiUrl);
+
+  getArticles(sort: SortBy = SortBy.DESC): Observable<Article[]> {
+    return this.http.get<Article[]>(`${this.apiUrl}?sort=${sort}`);
   }
 
   getArticle(id: number): Observable<Article> {

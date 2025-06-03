@@ -24,11 +24,12 @@ public class SubscriptionService implements ISubscriptionService {
     @Autowired
     public SubscriptionService(
             SubscriptionRepository subscriptionRepository,
-            UserRepository userRepository,
-            ThemeRepository themeRepository) {
+            UserRepository         userRepository,
+            ThemeRepository        themeRepository
+            ) {
         this.subscriptionRepository = subscriptionRepository;
-        this.userRepository = userRepository;
-        this.themeRepository = themeRepository;
+        this.userRepository         = userRepository;
+        this.themeRepository        = themeRepository;
     }
 
     @Override
