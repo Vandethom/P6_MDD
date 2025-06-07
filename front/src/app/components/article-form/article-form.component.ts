@@ -75,7 +75,7 @@ export class ArticleFormComponent implements OnInit {
       imageUrl: ['', [
         Validators.pattern('^(https?:\\/\\/)?([\\da-z.-]+)\\.([a-z.]{2,6})([\\/\\w .-]*)*\\/?$')
       ]],
-      themeIds: [[]]
+      themeId: [null, [Validators.required]]
     });
   }
 
@@ -92,13 +92,13 @@ export class ArticleFormComponent implements OnInit {
           return;
         }
         
-        const themeIds = article.themes ? article.themes.map(theme => theme.id) : [];
+        const themeId = article.theme ? article.theme.id : null;
         
         this.articleForm.patchValue({
           title   : article.title,
           content : article.content,
           imageUrl: article.imageUrl || '',
-          themeIds: themeIds
+          themeId: themeId
         });
       },
       error: (error) => {
@@ -150,7 +150,7 @@ export class ArticleFormComponent implements OnInit {
       title   : formValue.title || '',
       content : formValue.content || '',
       imageUrl: formValue.imageUrl || undefined,
-      themeIds: formValue.themeIds || []
+      themeId: formValue.themeId || null
     };
   }
 

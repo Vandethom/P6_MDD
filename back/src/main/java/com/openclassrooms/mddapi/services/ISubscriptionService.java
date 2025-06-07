@@ -1,8 +1,6 @@
 package com.openclassrooms.mddapi.services;
 
 import com.openclassrooms.mddapi.models.Subscription;
-import com.openclassrooms.mddapi.models.Theme;
-import com.openclassrooms.mddapi.models.User;
 
 import java.util.List;
 

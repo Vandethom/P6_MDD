@@ -59,11 +59,10 @@ public class ThemeController {
 
         return ResponseEntity.noContent().build();
     }
-    
-    @GetMapping("/{id}/articles")
-    public ResponseEntity<List<ArticleDTO>> getArticlesByTheme(@PathVariable Long id) {
+      @GetMapping("/{id}/articles")
+    public ResponseEntity<List<ArticleDTO>> getArticlesByTheme(@PathVariable Long id, @RequestParam(defaultValue = "desc") String sort) {
         try {
-            List<ArticleDTO> articles = articleService.getArticlesByTheme(id);
+            List<ArticleDTO> articles = articleService.getArticlesByTheme(id, sort);
             
             return ResponseEntity.ok(articles);
         } catch (Exception e) {

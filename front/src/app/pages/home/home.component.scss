@@ -31,7 +31,7 @@
 
 .articles-grid {
   display              : grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap                  : 2rem;
 }
 
@@ -54,16 +54,15 @@
   }
     mat-card-content {
     flex-grow: 1;
-    
-    p {
+      p {
       overflow          : hidden;
       text-overflow     : ellipsis;
       display           : -webkit-box;
       -webkit-line-clamp: 4;
+      line-clamp        : 4;
       -webkit-box-orient: vertical;
     }
-    
-    .article-themes {
+      .article-theme {
       margin-top: 15px;
       
       mat-chip {
@@ -94,6 +93,24 @@
     height       : 4rem;
     width        : 4rem;
     margin-bottom: 1rem;
+  }
+  
+  .subscription-hint {
+    margin-top   : 0.5rem;
+    margin-bottom: 2rem;
+    font-style   : italic;
+    color        : #666;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap    : 1rem;
+    
+    @media (max-width: 600px) {
+      flex-direction: column;
+      width         : 100%;
+      max-width     : 300px;
+    }
   }
 }
 
@@ -195,6 +212,13 @@
   }
 }
 
+@media (max-width: 1024px) and (min-width: 769px) {
+  .articles-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap                  : 1.5rem;
+  }
+}
+
 @media (max-width: 768px) {
   .articles-header {
     flex-direction: column;
@@ -204,5 +228,54 @@
   
   .articles-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .home-container {
+    padding: 5rem 1rem 2rem;
+  }
+  
+  // Responsive pour la page d'accueil non-authentifiée
+  .welcome-container {
+    padding: 1rem;
+  }
+  
+  .welcome-logo-container {
+    margin-bottom: 1.5rem;
+  }
+  
+  .welcome-logo {
+    width: 90%;
+    max-width: 350px;
+  }
+  
+  .welcome-buttons {
+    flex-direction: column; // Empiler les boutons verticalement
+    gap: 1rem;
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .welcome-button {
+    min-width: unset;
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
+}
+
+// Media query spécifique pour très petits écrans (smartphones en portrait)
+@media (max-width: 480px) {
+  .welcome-container {
+    padding: 0.5rem;
+  }
+  
+  .welcome-buttons {
+    max-width: 250px;
+    gap: 0.8rem;
+  }
+  
+  .welcome-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
   }
 }

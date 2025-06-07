@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.openclassrooms.mddapi.dto.ArticleDTO;
@@ -34,10 +34,9 @@ public class ArticleController {
     public ArticleController(ArticleService articleService) {
         this.articleService = articleService;
     }
-    
-    @GetMapping
-    public ResponseEntity<List<ArticleDTO>> getAllArticles() {
-        List<ArticleDTO> articles = articleService.getAllArticles();
+      @GetMapping
+    public ResponseEntity<List<ArticleDTO>> getAllArticles(@RequestParam(defaultValue = "desc") String sort) {
+        List<ArticleDTO> articles = articleService.getAllArticles(sort);
         return ResponseEntity.ok(articles);
     }
     
@@ -50,8 +49,7 @@ public class ArticleController {
             return ResponseEntity.notFound().build();
         }
     }
-      @PostMapping
-    @PreAuthorize("isAuthenticated()")
+    @PostMapping
     public ResponseEntity<?> createArticle(@Valid @RequestBody CreateArticleRequest request) {
         try {
             System.out.println("Received request to create article: " + request.getTitle());
@@ -75,7 +73,6 @@ public class ArticleController {
     }
     
     @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ArticleDTO> updateArticle(
             @PathVariable Long id,
             @Valid @RequestBody CreateArticleRequest request) {
@@ -90,7 +87,6 @@ public class ArticleController {
     }
     
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
         try {
             articleService.deleteArticle(id);
@@ -101,11 +97,20 @@ public class ArticleController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
-    
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ArticleDTO>> getArticlesByUser(@PathVariable Long userId) {
+      @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ArticleDTO>> getArticlesByUser(@PathVariable Long userId, @RequestParam(defaultValue = "desc") String sort) {
         try {
-            List<ArticleDTO> articles = articleService.getArticlesByUser(userId);
+            List<ArticleDTO> articles = articleService.getArticlesByUser(userId, sort);
+            return ResponseEntity.ok(articles);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    @GetMapping("/subscriptions/{userId}")
+    public ResponseEntity<List<ArticleDTO>> getArticlesForUserSubscriptions(@PathVariable Long userId, @RequestParam(defaultValue = "desc") String sort) {
+        try {
+            List<ArticleDTO> articles = articleService.getArticlesForUserSubscriptions(userId, sort);
             return ResponseEntity.ok(articles);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();

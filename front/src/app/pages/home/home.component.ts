@@ -1,19 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router }            from '@angular/router';
 import { MatSnackBar }       from '@angular/material/snack-bar';
-import { ArticleService }    from '../../services/article.service';
+import { ArticleService, SortBy } from '../../services/article.service';
 import { Article }           from '../../models/article.model';
 import { AuthService }       from '../../services/auth.service';
+import { Subscription }      from 'rxjs';
 
 @Component({
   selector   : 'app-home',
   templateUrl: './home.component.html',
   styleUrls  : ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   articles       : Article[] = [];
   sortOption     : string    = 'recent';
   isAuthenticated: boolean   = false;
+  private authSubscription: Subscription = new Subscription();
   
   constructor(
     private router        : Router,
@@ -21,12 +23,20 @@ export class HomeComponent implements OnInit {
     private authService   : AuthService,
     private snackBar      : MatSnackBar
   ) { }
-
   ngOnInit(): void {
-    this.isAuthenticated = this.authService.isLoggedIn();
-    if (this.isAuthenticated) {
-      this.loadArticles();
-    }
+    // S'abonner aux changements d'authentification
+    this.authSubscription = this.authService.isAuthenticated$.subscribe(isAuth => {
+      this.isAuthenticated = isAuth;
+      if (this.isAuthenticated) {
+        this.loadArticles();
+      } else {
+        this.articles = [];
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.authSubscription.unsubscribe();
   }
     navigateToLogin(): void {
     this.router.navigate(['/login']);
@@ -34,41 +44,41 @@ export class HomeComponent implements OnInit {
   
   navigateToRegister(): void {
     this.router.navigate(['/register']);
-  }
+  }  loadArticles(): void {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      console.error('No current user found');
+      return;
+    }
 
-  loadArticles(): void {
-    this.articleService.getArticles().subscribe(
+    // Convertir sortOption en paramètre de tri
+    const sortValue = this.sortOption === 'recent' ? SortBy.DESC : SortBy.ASC;
+
+    this.articleService.getArticlesForUserSubscriptions(currentUser.id, sortValue).subscribe(
       articles => {
         this.articles = articles;
-        this.sortArticles();
+        // Plus besoin de tri côté client car c'est fait côté serveur
       },
       error => {
         console.error('Error loading articles:', error);
+        this.snackBar.open('Erreur lors du chargement des articles', 'Fermer', {
+          duration: 5000
+        });
       }
     );
   }
 
   sortArticles(): void {
-    switch (this.sortOption) {
-      case 'recent':
-        this.articles.sort((a, b) => {
-          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-          return dateB - dateA;
-        });
-        break;
-      case 'oldest':
-        this.articles.sort((a, b) => {
-          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-          return dateA - dateB;
-        });
-        break;
-    }
+    // Recharger les articles avec le nouveau tri
+    this.loadArticles();
   }
 
   createArticle(): void {
     this.router.navigate(['/create-article']);
+  }
+
+  navigateToThemes(): void {
+    this.router.navigate(['/themes']);
   }
 
   editArticle(articleId: number): void {

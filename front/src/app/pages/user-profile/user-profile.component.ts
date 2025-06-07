@@ -7,7 +7,7 @@ import { switchMap }                          from 'rxjs/operators';
 
 import { AuthService, User } from '../../services/auth.service';
 import { ThemeService }      from '../../services/theme.service';
-import { ArticleService }    from '../../services/article.service';
+import { ArticleService, SortBy }    from '../../services/article.service';
 import { Subscription }      from '../../models/theme.model';
 import { Article }           from '../../models/article.model';
 
@@ -41,12 +41,22 @@ export class UserProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const currentUser = this.authService.getCurrentUser();
-    if (currentUser) {
-      this.userId = currentUser.id;
-      this.loadUserProfile();
-      this.loadUserSubscriptions();
-    }
+    // Récupérer l'ID depuis les paramètres de la route
+    this.route.params.subscribe(params => {
+      if (params['id']) {
+        this.userId = parseInt(params['id']);
+        this.loadUserProfile();
+        this.loadUserSubscriptions();
+      } else {
+        // Si pas d'ID dans la route, utiliser l'utilisateur connecté
+        const currentUser = this.authService.getCurrentUser();
+        if (currentUser) {
+          this.userId = currentUser.id;
+          this.loadUserProfile();
+          this.loadUserSubscriptions();
+        }
+      }
+    });
   }
 
   loadUserProfile(): void {
@@ -60,7 +70,23 @@ export class UserProfileComponent implements OnInit {
         });
       },
       error: (error) => {
-        this.snackBar.open('Erreur lors du chargement du profil: ' + (error.error?.message || 'Erreur inconnue'), 'Fermer', {
+        console.error('Erreur complète lors du chargement du profil:', error);
+        console.error('Status:', error.status);
+        console.error('Message:', error.message);
+        console.error('Error details:', error.error);
+        
+        let errorMessage = 'Erreur inconnue';
+        if (error.status === 404) {
+          errorMessage = 'Utilisateur non trouvé';
+        } else if (error.status === 401) {
+          errorMessage = 'Non autorisé - veuillez vous reconnecter';
+        } else if (error.status === 500) {
+          errorMessage = 'Erreur serveur';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+        
+        this.snackBar.open('Erreur lors du chargement du profil: ' + errorMessage, 'Fermer', {
           duration: 5000
         });
       }
@@ -88,9 +114,9 @@ export class UserProfileComponent implements OnInit {
       return;
     }
     
-    // Créer un observable pour chaque thème pour récupérer ses articles
+    // Créer un observable pour chaque thème pour récupérer ses articles (triés par ordre décroissant par défaut)
     const observables = subscriptions.map(sub => {
-      return this.articleService.getArticlesByTheme(sub.themeId).pipe(
+      return this.articleService.getArticlesByTheme(sub.themeId, SortBy.DESC).pipe(
         switchMap(articles => {
           // Stocke les articles par thème
           this.themeArticles.set(sub.themeId, articles);

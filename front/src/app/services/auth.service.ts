@@ -1,6 +1,6 @@
 import { Injectable }  from '@angular/core';
 import { HttpClient }  from '@angular/common/http';
-import { Observable }  from 'rxjs';
+import { Observable, BehaviorSubject }  from 'rxjs';
 import { tap }         from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
@@ -38,8 +38,15 @@ export interface User {
 })
 export class AuthService {
   private apiUrl = environment.apiUrl;
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasValidToken());
+  public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
   constructor(private http: HttpClient) { }
+
+  private hasValidToken(): boolean {
+    const token = this.getToken();
+    return token ? !this.isTokenExpired(token) : false;
+  }
 
   login(
     username: string, 
@@ -66,17 +73,18 @@ export class AuthService {
           })
         );
     }
-
   private storeAuthData(response: AuthResponse): void {
     localStorage.setItem('token',    response.token);
     localStorage.setItem('username', response.username);
     localStorage.setItem('userId',   response.userId.toString());
+    this.isAuthenticatedSubject.next(true);
   }
 
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('userId');
+    this.isAuthenticatedSubject.next(false);
   }
 
   isLoggedIn(): boolean {

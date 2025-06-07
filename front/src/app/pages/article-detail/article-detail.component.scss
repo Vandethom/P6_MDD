@@ -44,7 +44,7 @@
   font-size    : 1.1rem;
 }
 
-.article-themes {
+.article-theme {
   margin-bottom: 2rem;
 }
 
@@ -68,11 +68,6 @@
 .comment-form {
   margin-bottom: 2rem;
   
-  .full-width {
-    width        : 100%;
-    margin-bottom: 1rem;
-  }
-  
   .comment-header {
     margin-bottom: 1rem;
     
@@ -82,10 +77,47 @@
     }
   }
   
-  .form-actions {
-    display        : flex;
-    justify-content: space-between;
-    align-items    : center;
+  .comment-input-group {
+    display    : flex;
+    align-items: flex-start;
+    gap        : 1rem;
+    
+    .comment-textarea {
+      flex: 1;
+    }
+      .comment-submit-btn {
+      margin-top : 0.5rem;
+      min-width  : 48px;
+      width      : 48px;
+      height     : 48px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      padding    : 0;
+      
+      mat-icon {
+        margin: 0;
+      }
+    }
+  }
+}
+
+/* Responsive adjustments for comment form */
+@media (max-width: 768px) {
+  .comment-form {
+    .comment-input-group {
+      flex-direction: row;
+      align-items   : flex-start;
+      
+      .comment-textarea {
+        flex: 1;
+      }
+      
+      .comment-submit-btn {
+        width: 48px;
+        min-width: 48px;
+        margin-top: 0.5rem;
+      }
+    }
   }
 }
 

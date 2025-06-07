@@ -2,12 +2,11 @@ import { Injectable }              from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable }              from 'rxjs';
 import { environment }             from '../../environments/environment';
-import { AuthService }             from './auth.service';
 import { Article }                 from '../models/article.model';
 
 
-enum SortBy {
-  ASC = 'asc',
+export enum SortBy {
+  ASC  = 'asc',
   DESC = 'desc'
 }
 
@@ -15,7 +14,7 @@ export interface CreateArticleRequest {
   title    : string;
   content  : string;
   imageUrl?: string;
-  themeIds?: number[];
+  themeId?: number;
 }
 
 @Injectable({
@@ -26,7 +25,6 @@ export class ArticleService {
 
   constructor(
     private http       : HttpClient,
-    private authService: AuthService
   ) { }
 
 
@@ -37,13 +35,16 @@ export class ArticleService {
   getArticle(id: number): Observable<Article> {
     return this.http.get<Article>(`${this.apiUrl}/${id}`);
   }
-
-  getArticlesByUser(userId: number): Observable<Article[]> {
-    return this.http.get<Article[]>(`${this.apiUrl}/user/${userId}`);
+  getArticlesByUser(userId: number, sort: SortBy = SortBy.DESC): Observable<Article[]> {
+    return this.http.get<Article[]>(`${this.apiUrl}/user/${userId}?sort=${sort}`);
   }
 
-  getArticlesByTheme(themeId: number): Observable<Article[]> {
-    return this.http.get<Article[]>(`${environment.apiUrl}/themes/${themeId}/articles`);
+  getArticlesForUserSubscriptions(userId: number, sort: SortBy = SortBy.DESC): Observable<Article[]> {
+    return this.http.get<Article[]>(`${this.apiUrl}/subscriptions/${userId}?sort=${sort}`);
+  }
+
+  getArticlesByTheme(themeId: number, sort: SortBy = SortBy.DESC): Observable<Article[]> {
+    return this.http.get<Article[]>(`${environment.apiUrl}/themes/${themeId}/articles?sort=${sort}`);
   }
 
   createArticle(articleRequest: CreateArticleRequest): Observable<Article> {

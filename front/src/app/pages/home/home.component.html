@@ -32,13 +32,12 @@
                mat-card-image 
                [src]="article.imageUrl" 
                [alt]="article.title">
-            <mat-card-content>
-            <p>{{ article.content | slice:0:200 }}{{ article.content.length > 200 ? '...' : '' }}</p>
+            <mat-card-content>            <p>{{ article.content | slice:0:200 }}{{ article.content.length > 200 ? '...' : '' }}</p>
             
-            <div *ngIf="article.themes && article.themes.length > 0" class="article-themes">
+            <div *ngIf="article.theme" class="article-theme">
               <mat-chip-list>
-                <mat-chip *ngFor="let theme of article.themes" color="primary" selected>
-                  {{ theme.title }}
+                <mat-chip color="primary" selected>
+                  {{ article.theme.title }}
                 </mat-chip>
               </mat-chip-list>
             </div>
@@ -69,16 +68,7 @@
 
 <!-- Welcome page for non-authenticated users -->
 <div *ngIf="!isAuthenticated">
-  <header class="welcome-header">
-    <div class="header-container">
-      <div class="logo-container">
-        <img src="/assets/logo_p6.png" alt="Logo du site" class="header-logo">
-      </div>
-      <div class="header-title">
-        <h1>Mega Desk Dev</h1>
-      </div>
-    </div>
-  </header>
+
 
   <div class="welcome-container">
     <div class="welcome-logo-container">

@@ -9,5 +9,5 @@ export interface Article {
   createdAt?: Date;
   updatedAt?: Date;
   imageUrl? : string;
-  themes?   : Theme[];
+  theme?    : Theme;
 }

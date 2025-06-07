@@ -9,6 +9,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -43,9 +45,9 @@ public class User implements UserDetails {
     @Size(min = 3, max = 50)
     @Column(unique = true, nullable = false)
     private String username;
-    
-    @NotBlank
+      @NotBlank
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
     
     @Email
@@ -55,6 +57,7 @@ public class User implements UserDetails {
       @Column(name = "created_at")
     private LocalDateTime createdAt;    @Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
 
     @PrePersist

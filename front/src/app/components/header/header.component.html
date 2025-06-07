@@ -7,32 +7,61 @@
            >
     </div>
     
-    <nav class="nav-links">
+    <!-- Navigation desktop -->
+    <nav class="nav-links desktop-nav">
       <ul>
         <li><a routerLink="/articles" routerLinkActive="active">Articles</a></li>
-        <li><a routerLink="/themes"   routerLinkActive="active">Thèmes</a></li>
+        <li><a routerLink="/themes" routerLinkActive="active">Thèmes</a></li>
       </ul>
     </nav>
     
-    <div class="user-actions">
-      <button class="account-btn" [matMenuTriggerFor]="accountMenu" aria-label="User account">
+    <!-- Actions utilisateur desktop -->
+    <div class="user-actions desktop-nav">
+      <button class="account-btn" [routerLink]="['/user', userId]" aria-label="User account">
         <mat-icon>account_circle</mat-icon>
-        <span>{{ username }}</span>
       </button>
-      <button class="logout-btn" (click)="logout()">
-        Se déconnecter
+      <button class="logout-btn" (click)="logout()" aria-label="Se déconnecter">
+        <mat-icon>logout</mat-icon>
       </button>
+    </div>
+
+    <!-- Bouton hamburger mobile -->
+    <button class="hamburger-btn mobile-nav" (click)="toggleMobileMenu()" aria-label="Menu">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+
+  <!-- Menu mobile -->
+  <div class="mobile-menu" [class.open]="isMobileMenuOpen" (click)="closeMobileMenu()">
+    <div class="mobile-menu-content" (click)="$event.stopPropagation()">
+      <!-- Bouton de fermeture -->
+      <button class="close-btn" (click)="closeMobileMenu()" aria-label="Fermer">
+        <mat-icon>close</mat-icon>
+      </button>
+      
+      <!-- Bouton Se déconnecter en rouge en haut -->
+      <button class="mobile-logout-btn" (click)="logout()" aria-label="Se déconnecter">
+        <mat-icon>logout</mat-icon>
+      </button>
+      
+      <!-- Navigation mobile -->
+      <nav class="mobile-nav-links">
+        <a routerLink="/articles" routerLinkActive="active" (click)="closeMobileMenu()" aria-label="Articles">
+          <mat-icon>article</mat-icon>
+        </a>
+        <a routerLink="/themes" routerLinkActive="active" (click)="closeMobileMenu()" aria-label="Thèmes">
+          <mat-icon>category</mat-icon>
+        </a>
+      </nav>
+      
+      <!-- Profil utilisateur en bas à droite -->
+      <div class="mobile-user-profile">
+        <button class="mobile-profile-btn" [routerLink]="['/user', userId]" (click)="closeMobileMenu()">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
 </header>
 
-<mat-menu #accountMenu="matMenu">
-  <button mat-menu-item [routerLink]="['/user', userId]">
-    <mat-icon>person</mat-icon>
-    <span>Mon profil</span>
-  </button>
-  <button mat-menu-item routerLink="/my-articles">
-    <mat-icon>article</mat-icon>
-    <span>Mes articles</span>
-  </button>
-</mat-menu>
+

@@ -1,7 +1,6 @@
 package com.openclassrooms.mddapi.dto;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -23,8 +22,9 @@ public class ArticleDTO {
     private String content;
     
     private String        author;
-    private Long          authorId;    private LocalDateTime createdAt;
+    private Long          authorId;    
+    private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String        imageUrl;
-    private Set<ThemeDTO> themes;
+    private ThemeDTO      theme;
 }

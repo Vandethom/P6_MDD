@@ -12,5 +12,12 @@ import com.openclassrooms.mddapi.models.User;
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     List<Article> findByAuthor(User author);
     List<Article> findAllByOrderByCreatedAtDesc();
-    List<Article> findByThemesId(Long themeId);
+    List<Article> findAllByOrderByCreatedAtAsc();
+    List<Article> findByThemeId(Long themeId);
+    List<Article> findByThemeIdInOrderByCreatedAtDesc(List<Long> themeIds);
+    List<Article> findByThemeIdInOrderByCreatedAtAsc(List<Long> themeIds);
+    List<Article> findByAuthorOrderByCreatedAtDesc(User author);
+    List<Article> findByAuthorOrderByCreatedAtAsc(User author);
+    List<Article> findByThemeIdOrderByCreatedAtDesc(Long themeId);
+    List<Article> findByThemeIdOrderByCreatedAtAsc(Long themeId);
 }

@@ -50,13 +50,16 @@
 
         <div class="form-field">
           <mat-form-field appearance="outline">
-            <mat-label>Thèmes (optionnel)</mat-label>
-            <mat-select formControlName="themeIds" multiple>
+            <mat-label>Thème</mat-label>
+            <mat-select formControlName="themeId" required>
               <mat-option *ngFor="let theme of availableThemes" [value]="theme.id">
                 {{ theme.title }}
               </mat-option>
             </mat-select>
-            <mat-hint>Sélectionnez les thèmes associés à votre article</mat-hint>
+            <mat-error *ngIf="articleForm.get('themeId')?.hasError('required')">
+              Vous devez sélectionner un thème
+            </mat-error>
+            <mat-hint>Sélectionnez le thème associé à votre article</mat-hint>
           </mat-form-field>
         </div>
 

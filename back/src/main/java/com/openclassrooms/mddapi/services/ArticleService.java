@@ -1,8 +1,6 @@
 package com.openclassrooms.mddapi.services;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +12,11 @@ import com.openclassrooms.mddapi.dto.ArticleDTO;
 import com.openclassrooms.mddapi.dto.CreateArticleRequest;
 import com.openclassrooms.mddapi.dto.ThemeDTO;
 import com.openclassrooms.mddapi.models.Article;
+import com.openclassrooms.mddapi.models.Subscription;
 import com.openclassrooms.mddapi.models.Theme;
 import com.openclassrooms.mddapi.models.User;
 import com.openclassrooms.mddapi.repositories.ArticleRepository;
+import com.openclassrooms.mddapi.repositories.SubscriptionRepository;
 import com.openclassrooms.mddapi.repositories.ThemeRepository;
 import com.openclassrooms.mddapi.repositories.UserRepository;
 
@@ -24,15 +24,17 @@ import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ArticleService {
-      private final ArticleRepository articleRepository;
-    private final UserRepository      userRepository;
-    private final ThemeRepository     themeRepository;
+    private final ArticleRepository articleRepository;
+    private final UserRepository userRepository;
+    private final ThemeRepository themeRepository;
+    private final SubscriptionRepository subscriptionRepository;
     
     @Autowired
-    public ArticleService(ArticleRepository articleRepository, UserRepository userRepository, ThemeRepository themeRepository) {
+    public ArticleService(ArticleRepository articleRepository, UserRepository userRepository, ThemeRepository themeRepository, SubscriptionRepository subscriptionRepository) {
         this.articleRepository = articleRepository;
-        this.userRepository    = userRepository;
-        this.themeRepository   = themeRepository;
+        this.userRepository = userRepository;
+        this.themeRepository = themeRepository;
+        this.subscriptionRepository = subscriptionRepository;
     }    @Transactional
     public ArticleDTO createArticle(CreateArticleRequest request) {
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -51,30 +53,36 @@ public class ArticleService {
             System.err.println("Error finding user by username: " + username + ", Error: " + e.getMessage());
             throw e;
         }
+
+        // Récupérer le thème
+        Theme theme = themeRepository.findById(request.getThemeId())
+                .orElseThrow(() -> new EntityNotFoundException("Theme not found with id: " + request.getThemeId()));
         
         Article article = Article.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
                 .imageUrl(request.getImageUrl())
                 .author(currentUser)
-                .themes(new HashSet<>())
+                .theme(theme)
                 .build();
-        
-        // Ajouter les thèmes si présents
-        if (request.getThemeIds() != null && !request.getThemeIds().isEmpty()) {
-            Set<Theme> themes = themeRepository.findAllById(request.getThemeIds())
-                    .stream()
-                    .collect(Collectors.toSet());
-            article.setThemes(themes);
-        }
         
         Article savedArticle = articleRepository.save(article);
         return mapToDTO(savedArticle);
     }
+      @Transactional(readOnly = true)
+    public List<ArticleDTO> getAllArticles() {
+        return getAllArticles("desc");
+    }
     
     @Transactional(readOnly = true)
-    public List<ArticleDTO> getAllArticles() {
-        return articleRepository.findAllByOrderByCreatedAtDesc().stream()
+    public List<ArticleDTO> getAllArticles(String sort) {
+        List<Article> articles;
+        if ("asc".equalsIgnoreCase(sort)) {
+            articles = articleRepository.findAllByOrderByCreatedAtAsc();
+        } else {
+            articles = articleRepository.findAllByOrderByCreatedAtDesc();
+        }
+        return articles.stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
@@ -91,8 +99,7 @@ public class ArticleService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User currentUser = userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        
-        Article article = articleRepository.findById(id)
+          Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Article not found with id: " + id));
         
         // Check if the current user is the author of the article
@@ -104,16 +111,10 @@ public class ArticleService {
         article.setContent(request.getContent());
         article.setImageUrl(request.getImageUrl());
         
-        // Mettre à jour les thèmes si présents
-        if (request.getThemeIds() != null) {
-            article.getThemes().clear();
-            if (!request.getThemeIds().isEmpty()) {
-                Set<Theme> themes = themeRepository.findAllById(request.getThemeIds())
-                        .stream()
-                        .collect(Collectors.toSet());
-                article.setThemes(themes);
-            }
-        }
+        // Mettre à jour le thème
+        Theme theme = themeRepository.findById(request.getThemeId())
+                .orElseThrow(() -> new EntityNotFoundException("Theme not found with id: " + request.getThemeId()));
+        article.setTheme(theme);
         
         Article updatedArticle = articleRepository.save(article);
         return mapToDTO(updatedArticle);
@@ -134,36 +135,91 @@ public class ArticleService {
         }
         
         articleRepository.delete(article);
-    }
-      @Transactional(readOnly = true)
+    }    @Transactional(readOnly = true)
     public List<ArticleDTO> getArticlesByUser(Long userId) {
-        User author = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-        
-        return articleRepository.findByAuthor(author).stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+        return getArticlesByUser(userId, "desc");
     }
     
     @Transactional(readOnly = true)
+    public List<ArticleDTO> getArticlesByUser(Long userId, String sort) {
+        User author = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+        
+        List<Article> articles;
+        if ("asc".equalsIgnoreCase(sort)) {
+            articles = articleRepository.findByAuthorOrderByCreatedAtAsc(author);
+        } else {
+            articles = articleRepository.findByAuthorOrderByCreatedAtDesc(author);
+        }
+        return articles.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+      @Transactional(readOnly = true)
     public List<ArticleDTO> getArticlesByTheme(Long themeId) {
+        return getArticlesByTheme(themeId, "desc");
+    }
+    
+    @Transactional(readOnly = true)
+    public List<ArticleDTO> getArticlesByTheme(Long themeId, String sort) {
         if (!themeRepository.existsById(themeId)) {
             throw new EntityNotFoundException("Theme not found with id: " + themeId);
         }
         
-        return articleRepository.findByThemesId(themeId).stream()
+        List<Article> articles;
+        if ("asc".equalsIgnoreCase(sort)) {
+            articles = articleRepository.findByThemeIdOrderByCreatedAtAsc(themeId);
+        } else {
+            articles = articleRepository.findByThemeIdOrderByCreatedAtDesc(themeId);
+        }
+        return articles.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }      @Transactional(readOnly = true)
+    public List<ArticleDTO> getArticlesForUserSubscriptions(Long userId) {
+        return getArticlesForUserSubscriptions(userId, "desc");
+    }
+    
+    @Transactional(readOnly = true)
+    public List<ArticleDTO> getArticlesForUserSubscriptions(Long userId, String sort) {
+        // Vérifier que l'utilisateur existe
+        userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
+        
+        // Récupérer les abonnements de l'utilisateur
+        List<Subscription> subscriptions = subscriptionRepository.findByUserId(userId);
+        
+        // Si l'utilisateur n'a aucun abonnement, retourner une liste vide
+        if (subscriptions.isEmpty()) {
+            return List.of();
+        }
+        
+        // Extraire les IDs des thèmes auxquels l'utilisateur est abonné
+        List<Long> themeIds = subscriptions.stream()
+                .map(subscription -> subscription.getTheme().getId())
+                .collect(Collectors.toList());
+          
+        // Récupérer les articles des thèmes abonnés, triés selon le paramètre
+        List<Article> articles;
+        if ("asc".equalsIgnoreCase(sort)) {
+            articles = articleRepository.findByThemeIdInOrderByCreatedAtAsc(themeIds);
+        } else {
+            articles = articleRepository.findByThemeIdInOrderByCreatedAtDesc(themeIds);
+        }
+        return articles.stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
-      private ArticleDTO mapToDTO(Article article) {
-        Set<ThemeDTO> themeDTOs = article.getThemes().stream()
-                .map(theme -> ThemeDTO.builder()
-                        .id(theme.getId())
-                        .title(theme.getTitle())
-                        .description(theme.getDescription())
-                        .createdAt(theme.getCreatedAt())
-                        .build())
-                .collect(Collectors.toSet());
+    private ArticleDTO mapToDTO(Article article) {
+        ThemeDTO themeDTO = null;
+        if (article.getTheme() != null) {
+            themeDTO = ThemeDTO.builder()
+                    .id(article.getTheme().getId())
+                    .title(article.getTheme().getTitle())
+                    .description(article.getTheme().getDescription())
+                    .createdAt(article.getTheme().getCreatedAt())
+                    .build();
+        }
                 
         return ArticleDTO.builder()
                 .id(article.getId())
@@ -174,7 +230,7 @@ public class ArticleService {
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())
                 .imageUrl(article.getImageUrl())
-                .themes(themeDTOs)
+                .theme(themeDTO)
                 .build();
     }
 }

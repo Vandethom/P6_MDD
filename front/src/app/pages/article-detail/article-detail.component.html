@@ -29,11 +29,11 @@
       <p>{{ article.content }}</p>
     </div>
 
-    <!-- Article themes -->
-    <div *ngIf="article.themes && article.themes.length > 0" class="article-themes">
+    <!-- Article theme -->
+    <div *ngIf="article.theme" class="article-theme">
       <mat-chip-list>
-        <mat-chip *ngFor="let theme of article.themes" color="primary" selected>
-          {{ theme.title }}
+        <mat-chip color="primary" selected>
+          {{ article.theme.title }}
         </mat-chip>
       </mat-chip-list>
     </div>
@@ -57,24 +57,26 @@
         <div class="comment-header">
           <span class="comment-as">Commenter en tant que <strong>{{ getCurrentUsername() }}</strong></span>
         </div>
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Ajouter un commentaire</mat-label>
-          <textarea 
-            matInput 
-            formControlName="content" 
-            rows="3"
-            placeholder="Partagez votre opinion..."></textarea>
-          <mat-error *ngIf="commentForm.get('content')?.hasError('required')">
-            Le contenu du commentaire ne peut pas être vide
-          </mat-error>
-        </mat-form-field>
-        <div class="form-actions">
+        <div class="comment-input-group">
+          <mat-form-field appearance="outline" class="comment-textarea">
+            <mat-label>Ajouter un commentaire</mat-label>
+            <textarea 
+              matInput 
+              formControlName="content" 
+              rows="3"
+              placeholder="Partagez votre opinion..."></textarea>
+            <mat-error *ngIf="commentForm.get('content')?.hasError('required')">
+              Le contenu du commentaire ne peut pas être vide
+            </mat-error>
+          </mat-form-field>
           <button 
             mat-raised-button 
             color="primary" 
             type="submit" 
+            class="comment-submit-btn"
+            aria-label="Publier le commentaire"
             [disabled]="commentForm.invalid || submitting">
-            <mat-icon>send</mat-icon> Publier
+            <mat-icon>send</mat-icon>
           </button>
         </div>
       </form>
