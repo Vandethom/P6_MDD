@@ -33,7 +33,7 @@
           <input matInput type="password" formControlName="password" placeholder="Mot de passe">
           <mat-hint>Laissez vide pour ne pas modifier</mat-hint>
           <mat-error *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
-            Le mot de passe doit contenir au moins 6 caractères
+            {{ getPasswordErrorMessage() }}
           </mat-error>
         </mat-form-field>
       </div>

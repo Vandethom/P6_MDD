@@ -47,11 +47,10 @@
           <input matInput type="password" 
                           formControlName="password" 
                           placeholder="Mot de passe"
-                          >
-          <mat-error *ngIf="authForm.get('password')?.invalid 
+                          >          <mat-error *ngIf="authForm.get('password')?.invalid 
                          && authForm.get('password')?.touched"
                          >
-            Le mot de passe doit contenir au moins 6 caractères
+            {{ getPasswordErrorMessage() }}
           </mat-error>
         </mat-form-field>
       </div>

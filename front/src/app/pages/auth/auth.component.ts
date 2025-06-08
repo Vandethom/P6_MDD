@@ -4,6 +4,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthService }                        from '../../services/auth.service';
 import { MatDialog }                          from '@angular/material/dialog';
 import { MatSnackBar }                        from '@angular/material/snack-bar';
+import { PasswordValidator }                  from '../../validators/password.validator';
 
 @Component({
   selector   : 'app-auth',
@@ -32,7 +33,6 @@ export class AuthComponent implements OnInit {
       this.initForm();
     });
   }
-
   initForm(): void {
     if (this.isLoginMode) {
       this.authForm = this.fb.group({
@@ -43,7 +43,7 @@ export class AuthComponent implements OnInit {
       this.authForm = this.fb.group({
         username: ['', [Validators.required]],
         email   : ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]]
+        password: ['', [Validators.required, PasswordValidator.strongPassword()]]
       });
     }
   }
@@ -83,6 +83,14 @@ export class AuthComponent implements OnInit {
         });
       }
     });
+  }
+
+  getPasswordErrorMessage(): string {
+    const passwordControl = this.authForm.get('password');
+    if (passwordControl?.errors) {
+      return PasswordValidator.getErrorMessage(passwordControl.errors);
+    }
+    return '';
   }
 
   register(): void {

@@ -9,6 +9,7 @@ import { AuthService, User } from '../../services/auth.service';
 import { ThemeService }      from '../../services/theme.service';
 import { ArticleService, SortBy }    from '../../services/article.service';
 import { Subscription }      from '../../models/theme.model';
+import { PasswordValidator } from '../../validators/password.validator';
 import { Article }           from '../../models/article.model';
 
 @Component({
@@ -36,7 +37,7 @@ export class UserProfileComponent implements OnInit {
     this.userForm = this.fb.group({
       username: ['', [Validators.required]],
       email   : ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.minLength(6)]]
+      password: ['', [PasswordValidator.strongPassword()]]
     });
   }
 
@@ -143,6 +144,14 @@ export class UserProfileComponent implements OnInit {
   
   navigateToThemes(): void {
     this.router.navigate(['/themes']);
+  }
+
+  getPasswordErrorMessage(): string {
+    const passwordControl = this.userForm.get('password');
+    if (passwordControl?.errors) {
+      return PasswordValidator.getErrorMessage(passwordControl.errors);
+    }
+    return '';
   }
 
   onSubmitUserForm(): void {

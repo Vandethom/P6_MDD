@@ -4,6 +4,7 @@ import com.openclassrooms.mddapi.dto.AuthResponse;
 import com.openclassrooms.mddapi.dto.LoginRequest;
 import com.openclassrooms.mddapi.dto.RegisterRequest;
 import com.openclassrooms.mddapi.services.IAuthService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
         AuthResponse response = authService.register(registerRequest);
         
         return ResponseEntity.ok(response);
