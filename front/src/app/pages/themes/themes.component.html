@@ -40,11 +40,11 @@
         <mat-card-actions>
           <button 
             mat-raised-button 
-            [color]="isSubscribed(theme.id) ? 'warn' : 'primary'" 
-            (click)="toggleSubscription(theme.id)"
-            [disabled]="loading">
-            <mat-icon>{{ isSubscribed(theme.id) ? 'cancel' : 'add' }}</mat-icon>
-            {{ isSubscribed(theme.id) ? 'Se désabonner' : 'S\'abonner' }}
+            [color]="isSubscribed(theme.id) ? 'accent' : 'primary'" 
+            (click)="subscribeToTheme(theme.id)"
+            [disabled]="loading || isSubscribed(theme.id)">
+            <mat-icon>{{ isSubscribed(theme.id) ? 'check' : 'add' }}</mat-icon>
+            {{ isSubscribed(theme.id) ? 'Déjà abonné' : 'S\'abonner' }}
           </button>
         </mat-card-actions>
       </mat-card>

@@ -183,21 +183,6 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
-  unsubscribe(themeId: number): void {
-    if (confirm('Êtes-vous sûr de vouloir vous désabonner de ce thème ?')) {
-      this.themeService.unsubscribeFromTheme(this.userId, themeId).subscribe({
-        next: () => {
-          this.subscriptions = this.subscriptions.filter(sub => sub.theme.id !== themeId);
-          this.snackBar.open('Désabonnement effectué avec succès', 'Fermer', {
-            duration: 3000
-          });
-        },
-        error: (error) => {
-          this.snackBar.open('Erreur lors du désabonnement: ' + (error.error?.message || 'Erreur inconnue'), 'Fermer', {
-            duration: 5000
-          });
-        }
-      });
-    }
-  }
+  // Méthode de désabonnement supprimée selon les spécifications MVP
+  // Dans la version MVP, les utilisateurs ne peuvent pas se désabonner
 }

@@ -25,14 +25,13 @@ export class ThemeService {
   // Récupérer les thèmes auxquels un utilisateur est abonné
   getUserSubscriptions(userId: number): Observable<Subscription[]> {
     return this.http.get<Subscription[]>(`${this.apiUrl}/users/${userId}/subscriptions`);
-  }
-  // S'abonner à un thème
+  }  // S'abonner à un thème
   subscribeToTheme(userId: number, themeId: number): Observable<Subscription> {
     return this.http.post<Subscription>(`${this.apiUrl}/users/${userId}/subscriptions`, { themeId });
   }
 
-  // Se désabonner d'un thème
-  unsubscribeFromTheme(userId: number, themeId: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/users/${userId}/subscriptions/${themeId}`);
-  }
+  // Désabonnement désactivé dans la version MVP
+  // unsubscribeFromTheme(userId: number, themeId: number): Observable<void> {
+  //   return this.http.delete<void>(`${this.apiUrl}/users/${userId}/subscriptions/${themeId}`);
+  // }
 }

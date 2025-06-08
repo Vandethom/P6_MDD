@@ -56,8 +56,7 @@ export class ThemeSubscriptionComponent implements OnInit {
 
   isSubscribed(themeId: number): boolean {
     return this.subscribedThemesIds.includes(themeId);
-  }
-  toggleSubscription(themeId: number): void {
+  }  subscribeToTheme(themeId: number): void {
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser || !currentUser.id) {
       this.errorMessage = 'Vous devez être connecté pour vous abonner à un thème.';
@@ -65,38 +64,27 @@ export class ThemeSubscriptionComponent implements OnInit {
     }
     const userId = currentUser.id;
 
+    // Ne pas permettre l'abonnement si déjà abonné
+    if (this.isSubscribed(themeId)) {
+      return;
+    }
+
     this.isLoading      = true;
     this.errorMessage   = '';
     this.successMessage = '';
 
-    if (this.isSubscribed(themeId)) {
-      // Désabonnement
-      this.themeService.unsubscribeFromTheme(userId, themeId).subscribe({
-        next: () => {
-          this.subscribedThemesIds = this.subscribedThemesIds.filter(id => id !== themeId);
-          this.successMessage = 'Désabonnement réussi.';
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Erreur lors du désabonnement', error);
-          this.errorMessage = 'Erreur lors du désabonnement. Veuillez réessayer.';
-          this.isLoading = false;
-        }
-      });
-    } else {
-      // Abonnement
-      this.themeService.subscribeToTheme(userId, themeId).subscribe({
-        next: () => {
-          this.subscribedThemesIds.push(themeId);
-          this.successMessage = 'Abonnement réussi.';
-          this.isLoading      = false;
-        },
-        error: (error) => {
-          console.error('Erreur lors de l\'abonnement', error);
-          this.errorMessage = 'Erreur lors de l\'abonnement. Veuillez réessayer.';
-          this.isLoading    = false;
-        }
-      });
-    }
+    // Abonnement uniquement
+    this.themeService.subscribeToTheme(userId, themeId).subscribe({
+      next: () => {
+        this.subscribedThemesIds.push(themeId);
+        this.successMessage = 'Abonnement réussi.';
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors de l\'abonnement', error);
+        this.errorMessage = 'Erreur lors de l\'abonnement. Veuillez réessayer.';
+        this.isLoading    = false;
+      }
+    });
   }
 }

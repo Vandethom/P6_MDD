@@ -62,7 +62,7 @@ export class ThemesComponent implements OnInit {
     return this.subscribedThemesIds.includes(themeId);
   }
 
-  toggleSubscription(themeId: number): void {
+  subscribeToTheme(themeId: number): void {
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser || !currentUser.id) {
       this.snackBar.open('Vous devez être connecté pour vous abonner à un thème', 'Fermer', {
@@ -71,45 +71,30 @@ export class ThemesComponent implements OnInit {
       return;
     }
 
+    // Ne pas permettre l'abonnement si déjà abonné
+    if (this.isSubscribed(themeId)) {
+      return;
+    }
+
     this.loading = true;
     
-    if (this.isSubscribed(themeId)) {
-      // Désabonnement
-      this.themeService.unsubscribeFromTheme(currentUser.id, themeId).subscribe({
-        next: () => {
-          this.subscribedThemesIds = this.subscribedThemesIds.filter(id => id !== themeId);
-          this.snackBar.open('Désabonnement effectué avec succès', 'Fermer', {
-            duration: 3000
-          });
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Erreur lors du désabonnement', error);
-          this.snackBar.open('Erreur lors du désabonnement', 'Fermer', {
-            duration: 5000
-          });
-          this.loading = false;
-        }
-      });
-    } else {
-      // Abonnement
-      this.themeService.subscribeToTheme(currentUser.id, themeId).subscribe({
-        next: () => {
-          this.subscribedThemesIds.push(themeId);
-          this.snackBar.open('Abonnement effectué avec succès', 'Fermer', {
-            duration: 3000
-          });
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Erreur lors de l\'abonnement', error);
-          this.snackBar.open('Erreur lors de l\'abonnement', 'Fermer', {
-            duration: 5000
-          });
-          this.loading = false;
-        }
-      });
-    }
+    // Abonnement uniquement
+    this.themeService.subscribeToTheme(currentUser.id, themeId).subscribe({
+      next: () => {
+        this.subscribedThemesIds.push(themeId);
+        this.snackBar.open('Abonnement effectué avec succès', 'Fermer', {
+          duration: 3000
+        });
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors de l\'abonnement', error);
+        this.snackBar.open('Erreur lors de l\'abonnement', 'Fermer', {
+          duration: 5000
+        });
+        this.loading = false;
+      }
+    });
   }
 
   viewUserProfile(): void {

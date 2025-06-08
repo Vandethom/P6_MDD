@@ -26,13 +26,14 @@
       </div>
       <div class="theme-card-body">
         <p>{{ theme.description }}</p>
-      </div>
-      <div class="theme-card-footer">
+      </div>      <div class="theme-card-footer">
         <button 
-          [ngClass]="isSubscribed(theme.id) ? 'btn-danger' : 'btn-primary'" 
-          class="btn" 
-          (click)="toggleSubscription(theme.id)">
-          {{ isSubscribed(theme.id) ? 'Se désabonner' : 'S\'abonner' }}
+          class="btn"
+          [class.btn-primary]="!isSubscribed(theme.id)"
+          [class.btn-secondary]="isSubscribed(theme.id)"
+          (click)="subscribeToTheme(theme.id)"
+          [disabled]="isSubscribed(theme.id)">
+          {{ isSubscribed(theme.id) ? 'Déjà abonné' : 'S\'abonner' }}
         </button>
       </div>
     </div>
