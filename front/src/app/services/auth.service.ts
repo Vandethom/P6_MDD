@@ -11,7 +11,7 @@ interface AuthResponse {
 }
 
 interface LoginRequest {
-  username: string;
+  usernameOrEmail: string;
   password: string;
 }
 
@@ -47,12 +47,11 @@ export class AuthService {
     const token = this.getToken();
     return token ? !this.isTokenExpired(token) : false;
   }
-
   login(
-    username: string, 
+    usernameOrEmail: string, 
     password: string
   ): Observable<AuthResponse> {
-      const loginRequest: LoginRequest = { username, password };
+      const loginRequest: LoginRequest = { usernameOrEmail, password };
       return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, loginRequest)
         .pipe(
           tap(response => {

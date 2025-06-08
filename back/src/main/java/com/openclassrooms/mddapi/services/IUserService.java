@@ -5,6 +5,7 @@ import com.openclassrooms.mddapi.models.User;
 
 public interface IUserService {
     User    findByUsername(String username);
+    User    findByUsernameOrEmail(String usernameOrEmail);
     User    findById(Long id);
     boolean isUsernameAvailable(String username);
     boolean isEmailAvailable(String email);

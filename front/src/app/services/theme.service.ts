@@ -29,9 +29,8 @@ export class ThemeService {
   subscribeToTheme(userId: number, themeId: number): Observable<Subscription> {
     return this.http.post<Subscription>(`${this.apiUrl}/users/${userId}/subscriptions`, { themeId });
   }
-
-  // Désabonnement désactivé dans la version MVP
-  // unsubscribeFromTheme(userId: number, themeId: number): Observable<void> {
-  //   return this.http.delete<void>(`${this.apiUrl}/users/${userId}/subscriptions/${themeId}`);
-  // }
+  // Se désabonner d'un thème
+  unsubscribeFromTheme(userId: number, themeId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/users/${userId}/subscriptions/${themeId}`);
+  }
 }

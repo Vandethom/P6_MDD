@@ -8,6 +8,7 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { MatButtonModule }          from '@angular/material/button';
 import { MatCardModule }            from '@angular/material/card';
 import { MatChipsModule }           from '@angular/material/chips';
+import { MatDialogModule }          from '@angular/material/dialog';
 import { MatFormFieldModule }       from '@angular/material/form-field';
 import { MatIconModule }            from '@angular/material/icon';
 import { MatInputModule }           from '@angular/material/input';
@@ -31,6 +32,7 @@ import { UserProfileComponent } from './pages/user-profile/user-profile.componen
 import { ArticleDetailComponent } from './pages/article-detail/article-detail.component';
 import { ThemesComponent } from './pages/themes/themes.component';
 import { ThemeDetailComponent } from './pages/theme-detail/theme-detail.component';
+import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,8 @@ import { ThemeDetailComponent } from './pages/theme-detail/theme-detail.componen
     UserProfileComponent,
     ArticleDetailComponent,
     ThemesComponent,
-    ThemeDetailComponent
+    ThemeDetailComponent,
+    ConfirmationDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -51,11 +54,11 @@ import { ThemeDetailComponent } from './pages/theme-detail/theme-detail.componen
     ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
-    
-    // Angular Material
+      // Angular Material
     MatButtonModule,
     MatCardModule,
     MatChipsModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,

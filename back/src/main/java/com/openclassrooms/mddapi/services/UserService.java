@@ -27,14 +27,23 @@ public class UserService implements IUserService {
         this.userRepository  = userRepository;
         this.passwordEncoder = passwordEncoder;
     }    
-    
-    @Override
+      @Override
     public User findByUsername(String username) {
         System.out.println("Looking up user by username: " + username);
         return userRepository.findByUsername(username)
             .orElseThrow(() -> {
                 System.err.println("User not found in database: " + username);
                 return new AuthException("User not found: " + username);
+            });
+    }
+    
+    @Override
+    public User findByUsernameOrEmail(String usernameOrEmail) {
+        System.out.println("Looking up user by username or email: " + usernameOrEmail);
+        return userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+            .orElseThrow(() -> {
+                System.err.println("User not found in database with username or email: " + usernameOrEmail);
+                return new AuthException("Nom d'utilisateur ou email non trouvé: " + usernameOrEmail);
             });
     }
     

@@ -2,6 +2,7 @@ import { Component, OnInit }                  from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router }             from '@angular/router';
 import { MatSnackBar }                        from '@angular/material/snack-bar';
+import { MatDialog }                          from '@angular/material/dialog';
 import { forkJoin, of }                       from 'rxjs';
 import { switchMap }                          from 'rxjs/operators';
 
@@ -11,6 +12,7 @@ import { ArticleService, SortBy }    from '../../services/article.service';
 import { Subscription }      from '../../models/theme.model';
 import { PasswordValidator } from '../../validators/password.validator';
 import { Article }           from '../../models/article.model';
+import { ConfirmationDialogComponent, ConfirmationDialogData } from '../../components/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector   : 'app-user-profile',
@@ -32,7 +34,8 @@ export class UserProfileComponent implements OnInit {
     private route         : ActivatedRoute,
     private router        : Router,
     private fb            : FormBuilder,
-    private snackBar      : MatSnackBar
+    private snackBar      : MatSnackBar,
+    private dialog        : MatDialog
   ) {
     this.userForm = this.fb.group({
       username: ['', [Validators.required]],
@@ -183,6 +186,52 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
-  // Méthode de désabonnement supprimée selon les spécifications MVP
-  // Dans la version MVP, les utilisateurs ne peuvent pas se désabonner
+  unsubscribeFromTheme(themeId: number): void {
+    // Trouver le nom du thème pour l'afficher dans la confirmation
+    const subscription = this.subscriptions.find(sub => sub.themeId === themeId);
+    const themeName = subscription?.theme.title || 'ce thème';
+    
+    const dialogData: ConfirmationDialogData = {
+      title: 'Confirmer le désabonnement',
+      message: `Êtes-vous sûr de vouloir vous désabonner de "${themeName}" ? Vous ne recevrez plus les nouveaux articles de ce thème.`,
+      confirmText: 'Se désabonner',
+      cancelText: 'Annuler'
+    };
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.performUnsubscribe(themeId);
+      }
+    });
+  }
+
+  private performUnsubscribe(themeId: number): void {
+    this.loading = true;
+    
+    this.themeService.unsubscribeFromTheme(this.userId, themeId).subscribe({
+      next: () => {
+        // Mettre à jour la liste des abonnements localement
+        this.subscriptions = this.subscriptions.filter(sub => sub.themeId !== themeId);
+        
+        // Supprimer les articles de ce thème de la carte
+        this.themeArticles.delete(themeId);
+        
+        this.loading = false;
+        this.snackBar.open('Désabonnement effectué avec succès', 'Fermer', {
+          duration: 3000
+        });
+      },
+      error: (error) => {
+        this.loading = false;
+        this.snackBar.open('Erreur lors du désabonnement: ' + (error.error?.message || 'Erreur inconnue'), 'Fermer', {
+          duration: 5000
+        });
+      }
+    });
+  }
 }

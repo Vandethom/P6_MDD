@@ -38,15 +38,14 @@ public class SubscriptionController {
         Subscription subscription = subscriptionService.subscribeToTheme(userId, themeId);
 
         return ResponseEntity.ok(SubscriptionResponse.fromEntity(subscription));
-    }    // Désabonnement désactivé dans la version MVP
-    // @DeleteMapping("/{userId}/subscriptions/{themeId}")
-    // public ResponseEntity<Void> unsubscribeFromTheme(
-    //         @PathVariable Long userId,
-    //         @PathVariable Long themeId
-    //         ) {
-    //     subscriptionService.unsubscribeFromTheme(userId, themeId);
-    //     return ResponseEntity.noContent().build();
-    // }
+    }    @DeleteMapping("/{userId}/subscriptions/{themeId}")
+    public ResponseEntity<Void> unsubscribeFromTheme(
+            @PathVariable Long userId,
+            @PathVariable Long themeId
+            ) {
+        subscriptionService.unsubscribeFromTheme(userId, themeId);
+        return ResponseEntity.noContent().build();
+    }
 
     @GetMapping("/{userId}/subscriptions/{themeId}")
     public ResponseEntity<Boolean> checkSubscription(

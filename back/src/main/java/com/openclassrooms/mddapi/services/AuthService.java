@@ -26,12 +26,10 @@ public class AuthService implements IAuthService {
         this.userService     = userService;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil         = jwtUtil;
-    }
-
-    @Override
+    }    @Override
     public AuthResponse login(LoginRequest loginRequest) {
-        // Get user by username
-        User user = userService.findByUsername(loginRequest.getUsername());
+        // Get user by username or email
+        User user = userService.findByUsernameOrEmail(loginRequest.getUsernameOrEmail());
         
         // Check password
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {

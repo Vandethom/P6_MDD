@@ -68,7 +68,6 @@ export class AuthComponent implements OnInit {
       this.register();
     }
   }
-
   login(): void {
     const { username, password } = this.authForm.value;
     this.authService.login(username, password).subscribe({

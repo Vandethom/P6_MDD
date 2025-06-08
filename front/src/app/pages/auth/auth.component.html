@@ -10,17 +10,16 @@
   <div class="auth-form">
     <h2>{{ isLoginMode ? 'Se connecter' : 'S\'inscrire' }}</h2>
     
-    <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()">      <div class="form-group">
         <mat-form-field appearance="outline">
-          <mat-label>Nom d'utilisateur</mat-label>
+          <mat-label>{{ isLoginMode ? 'Nom d\'utilisateur ou Email' : 'Nom d\'utilisateur' }}</mat-label>
           <input matInput formControlName="username" 
-                          placeholder="Nom d'utilisateur"
+                          [placeholder]="isLoginMode ? 'Nom d\'utilisateur ou Email' : 'Nom d\'utilisateur'"
                           >
           <mat-error *ngIf="authForm.get('username')?.invalid 
                          && authForm.get('username')?.touched"
                          >
-            Le nom d'utilisateur est requis
+            {{ isLoginMode ? 'Le nom d\'utilisateur ou email est requis' : 'Le nom d\'utilisateur est requis' }}
           </mat-error>
         </mat-form-field>
       </div>
