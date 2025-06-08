@@ -13,7 +13,6 @@ export enum SortBy {
 export interface CreateArticleRequest {
   title    : string;
   content  : string;
-  imageUrl?: string;
   themeId?: number;
 }
 

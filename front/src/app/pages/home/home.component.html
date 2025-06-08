@@ -25,14 +25,9 @@
             <mat-card-title>{{ article.title }}</mat-card-title>
             <mat-card-subtitle>
               {{ article.createdAt | date:'medium' }} · Par {{ article.author }}
-            </mat-card-subtitle>
-          </mat-card-header>
+            </mat-card-subtitle>          </mat-card-header>
           
-          <img *ngIf="article.imageUrl" 
-               mat-card-image 
-               [src]="article.imageUrl" 
-               [alt]="article.title">
-            <mat-card-content>            <p>{{ article.content | slice:0:200 }}{{ article.content.length > 200 ? '...' : '' }}</p>
+          <mat-card-content><p>{{ article.content | slice:0:200 }}{{ article.content.length > 200 ? '...' : '' }}</p>
             
             <div *ngIf="article.theme" class="article-theme">
               <mat-chip-list>

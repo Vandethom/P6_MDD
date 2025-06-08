@@ -21,10 +21,9 @@ public class ArticleDTO {
     @NotBlank(message = "Content cannot be empty")
     private String content;
     
-    private String        author;
+    private String        author;    
     private Long          authorId;    
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String        imageUrl;
     private ThemeDTO      theme;
 }

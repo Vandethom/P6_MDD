@@ -57,11 +57,9 @@ public class ArticleService {
         // Récupérer le thème
         Theme theme = themeRepository.findById(request.getThemeId())
                 .orElseThrow(() -> new EntityNotFoundException("Theme not found with id: " + request.getThemeId()));
-        
-        Article article = Article.builder()
+          Article article = Article.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
-                .imageUrl(request.getImageUrl())
                 .author(currentUser)
                 .theme(theme)
                 .build();
@@ -106,10 +104,8 @@ public class ArticleService {
         if (!article.getAuthor().getId().equals(currentUser.getId())) {
             throw new IllegalAccessError("You are not authorized to update this article");
         }
-        
-        article.setTitle(request.getTitle());
+          article.setTitle(request.getTitle());
         article.setContent(request.getContent());
-        article.setImageUrl(request.getImageUrl());
         
         // Mettre à jour le thème
         Theme theme = themeRepository.findById(request.getThemeId())
@@ -220,8 +216,7 @@ public class ArticleService {
                     .createdAt(article.getTheme().getCreatedAt())
                     .build();
         }
-                
-        return ArticleDTO.builder()
+                  return ArticleDTO.builder()
                 .id(article.getId())
                 .title(article.getTitle())
                 .content(article.getContent())
@@ -229,7 +224,6 @@ public class ArticleService {
                 .authorId(article.getAuthor().getId())
                 .createdAt(article.getCreatedAt())
                 .updatedAt(article.getUpdatedAt())
-                .imageUrl(article.getImageUrl())
                 .theme(themeDTO)
                 .build();
     }

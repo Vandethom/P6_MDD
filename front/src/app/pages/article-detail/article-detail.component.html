@@ -19,11 +19,6 @@
       <span class="article-author">· Par {{ article.author }}</span>
     </div>
 
-    <!-- Article image if available -->
-    <div *ngIf="article.imageUrl" class="article-image-container">
-      <img [src]="article.imageUrl" [alt]="article.title" class="article-image">
-    </div>
-
     <!-- Article content -->
     <div class="article-text">
       <p>{{ article.content }}</p>

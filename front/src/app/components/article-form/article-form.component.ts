@@ -72,9 +72,6 @@ export class ArticleFormComponent implements OnInit {
         Validators.required,
         Validators.minLength(10)
       ]],
-      imageUrl: ['', [
-        Validators.pattern('^(https?:\\/\\/)?([\\da-z.-]+)\\.([a-z.]{2,6})([\\/\\w .-]*)*\\/?$')
-      ]],
       themeId: [null, [Validators.required]]
     });
   }
@@ -97,7 +94,6 @@ export class ArticleFormComponent implements OnInit {
         this.articleForm.patchValue({
           title   : article.title,
           content : article.content,
-          imageUrl: article.imageUrl || '',
           themeId: themeId
         });
       },
@@ -149,7 +145,6 @@ export class ArticleFormComponent implements OnInit {
     return {
       title   : formValue.title || '',
       content : formValue.content || '',
-      imageUrl: formValue.imageUrl || undefined,
       themeId: formValue.themeId || null
     };
   }

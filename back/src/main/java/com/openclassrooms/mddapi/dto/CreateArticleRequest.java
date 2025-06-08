@@ -11,10 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateArticleRequest {
     @NotBlank(message = "Title cannot be empty")
-    private String title;
-      @NotBlank(message = "Content cannot be empty")
+    private String title;    @NotBlank(message = "Content cannot be empty")
     private String content;
-    private String imageUrl;
     
     @NotNull(message = "Theme ID cannot be null")
     private Long themeId;

@@ -42,17 +42,12 @@
   transition    : transform 0.2s ease, box-shadow 0.2s ease;
   cursor        : pointer;
   transition    : transform 0.2s, box-shadow 0.2s;
-  
-  &:hover {
+    &:hover {
     transform : translateY(-5px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   }
   
-  .article-header-image {
-    background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
-    background-size : cover;
-  }
-    mat-card-content {
+  mat-card-content {
     flex-grow: 1;
       p {
       overflow          : hidden;

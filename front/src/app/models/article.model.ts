@@ -8,6 +8,5 @@ export interface Article {
   authorId? : number;
   createdAt?: Date;
   updatedAt?: Date;
-  imageUrl? : string;
   theme?    : Theme;
 }

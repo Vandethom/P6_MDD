@@ -51,10 +51,8 @@ public class Article {
     
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
-    
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;    @Column(name = "image_url")
-    private String imageUrl;
+      @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id")

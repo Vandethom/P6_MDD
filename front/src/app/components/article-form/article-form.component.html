@@ -39,17 +39,6 @@
 
         <div class="form-field">
           <mat-form-field appearance="outline">
-            <mat-label>URL de l'image (optionnel)</mat-label>
-            <input matInput formControlName="imageUrl" placeholder="https://example.com/image.jpg">
-            <mat-hint>Laissez vide si vous ne souhaitez pas ajouter d'image</mat-hint>
-            <mat-error *ngIf="articleForm.get('imageUrl')?.hasError('pattern')">
-              Veuillez saisir une URL valide
-            </mat-error>
-          </mat-form-field>
-        </div>
-
-        <div class="form-field">
-          <mat-form-field appearance="outline">
             <mat-label>Thème</mat-label>
             <mat-select formControlName="themeId" required>
               <mat-option *ngFor="let theme of availableThemes" [value]="theme.id">
