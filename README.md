@@ -1,25 +1,190 @@
-# P6-Full-Stack-reseau-dev
+# MDD - Monde de Dév
 
-## Front
+## 🌟 Présentation du Projet
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.1.3.
+MDD (Monde de Dév) est une plateforme de réseau social dédiée aux développeurs. Cette application full-stack permet aux utilisateurs de s'abonner à des thèmes de développement, de lire et publier des articles, et d'interagir via un système de commentaires.
 
-Don't forget to install your node_modules before starting (`npm install`).
+### 🎯 Fonctionnalités Principales
 
-### Development server
+- **🔐 Authentification** : Inscription, connexion avec JWT
+- **📝 Gestion d'Articles** : Création, lecture, modification, suppression d'articles
+- **🏷️ Thèmes** : Abonnement à des thèmes de développement
+- **💬 Commentaires** : Système de commentaires sur les articles
+- **👤 Profil Utilisateur** : Gestion du profil et des abonnements
+- **📱 Responsive Design** : Interface adaptative avec Angular Material
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## 🛠️ Stack Technique
 
-### Build
+### Backend (Spring Boot)
+- **Framework** : Spring Boot 3.2.3
+- **Langage** : Java 21
+- **Base de données** : MySQL
+- **Sécurité** : Spring Security + JWT
+- **ORM** : JPA/Hibernate
+- **Build** : Maven
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+### Frontend (Angular)
+- **Framework** : Angular 14.1.3
+- **UI Library** : Angular Material
+- **Langage** : TypeScript
+- **Build** : Angular CLI
+- **Styles** : SCSS
 
-### Where to start
+## 📋 Prérequis
 
-As you may have seen if you already started the app, a simple home page containing a logo, a title and a button is available. If you take a look at its code (in the `home.component.html`) you will see that an external UI library is already configured in the project.
+- **Java** 21 ou supérieur
+- **Node.js** 16 ou supérieur
+- **npm** ou **yarn**
+- **MySQL** 8.0 ou supérieur
+- **Angular CLI** (`npm install -g @angular/cli`)
 
-This library is `@angular/material`, it's one of the most famous in the angular ecosystem. As you can see on their docs (https://material.angular.io/), it contains a lot of highly customizable components that will help you design your interfaces quickly.
+## 🚀 Installation et Lancement
 
-Note: I recommend to use material however it's not mandatory, if you prefer you can get rid of it.
+### 1. Cloner le Repository
 
-Good luck!
+```bash
+git clone <repository-url>
+cd P6-Full-Stack-reseau-dev
+```
+
+### 2. Configuration de la Base de Données
+
+Créer une base de données MySQL :
+
+```sql
+CREATE DATABASE mdd_db;
+```
+
+### 3. Backend (Spring Boot)
+
+```bash
+cd back
+
+# Configuration de la base de données
+# Éditer src/main/resources/application.properties avec vos paramètres MySQL
+
+# Lancement
+mvn spring-boot:run
+```
+
+Le backend sera accessible sur `http://localhost:8080`
+
+### 4. Frontend (Angular)
+
+```bash
+cd front
+
+# Installation des dépendances
+npm install
+
+# Lancement en mode développement
+ng serve
+```
+
+Le frontend sera accessible sur `http://localhost:4200`
+
+## 🔧 Configuration
+
+### Backend - application.properties
+
+```properties
+# Base de données
+spring.datasource.url=jdbc:mysql://localhost:3306/mdd_db?createDatabaseIfNotExist=true&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=your_password
+
+# JWT
+jwt.secret=your_jwt_secret_key
+jwt.expiration=86400000
+
+# Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+```
+
+### Frontend - environment.ts
+
+```typescript
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:8080/api'
+};
+```
+
+## 📚 API Documentation
+
+### 🔐 Authentification
+- `POST /api/auth/register` - Inscription
+- `POST /api/auth/login` - Connexion
+
+### 📝 Articles
+- `GET /api/articles` - Liste des articles
+- `GET /api/articles/{id}` - Détail d'un article
+- `POST /api/articles` - Créer un article
+- `PUT /api/articles/{id}` - Modifier un article
+- `DELETE /api/articles/{id}` - Supprimer un article
+- `GET /api/articles/user/{userId}` - Articles d'un utilisateur
+- `GET /api/articles/subscriptions/{userId}` - Articles des abonnements
+
+### 🏷️ Thèmes
+- `GET /api/themes` - Liste des thèmes
+- `GET /api/themes/{id}` - Détail d'un thème
+- `GET /api/themes/{id}/articles` - Articles d'un thème
+
+### 📝 Abonnements
+- `GET /api/users/{userId}/subscriptions` - Abonnements d'un utilisateur
+- `POST /api/users/{userId}/subscriptions` - S'abonner à un thème
+
+### 💬 Commentaires
+- `GET /api/comments/article/{articleId}` - Commentaires d'un article
+- `POST /api/comments` - Créer un commentaire
+
+## 🏗️ Architecture
+
+### Structure Backend
+```
+back/
+├── src/main/java/com/openclassrooms/mddapi/
+│   ├── controllers/     # Contrôleurs REST
+│   ├── dto/            # Data Transfer Objects
+│   ├── models/         # Entités JPA
+│   ├── repositories/   # Repositories Spring Data
+│   ├── services/       # Logique métier
+│   └── security/       # Configuration sécurité
+└── src/main/resources/
+    ├── application.properties
+    └── data.sql        # Données d'initialisation
+```
+
+### Structure Frontend
+```
+front/src/app/
+├── components/         # Composants réutilisables
+│   ├── article-form/
+│   └── header/
+├── pages/             # Pages de l'application
+│   ├── auth/
+│   ├── home/
+│   ├── themes/
+│   └── user-profile/
+├── services/          # Services Angular
+├── models/            # Modèles TypeScript
+├── guards/            # Guards de routing
+└── interceptors/      # Intercepteurs HTTP
+```
+
+## 🔒 Sécurité
+
+- **Authentification JWT** : Tokens sécurisés avec expiration
+- **Authorization** : Guards Angular + Spring Security
+- **CORS** : Configuration pour communication cross-origin
+- **Validation** : Validation côté client et serveur
+- **Protection CSRF** : Protection contre les attaques CSRF
+
+## 🤝 Contribution
+
+1. Fork le projet
+2. Créer une branche feature (`git checkout -b feature/AmazingFeature`)
+3. Commit les changements (`git commit -m 'Add some AmazingFeature'`)
+4. Push vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrir une Pull Request
